@@ -1,0 +1,6 @@
+knn2/build/
+knn2/knn_mpi
+knn2/cv
+knn2/cv_pg_*
+gmon.out
+resultados_*.tar.gz
