@@ -1,0 +1,14 @@
+K: 1 Accuracy: 94.94%
+K: 2 Accuracy: 94.11%
+K: 3 Accuracy: 95.04%
+K: 4 Accuracy: 94.86%
+K: 5 Accuracy: 94.78%
+K: 6 Accuracy: 94.78%
+K: 7 Accuracy: 94.63%
+K: 8 Accuracy: 94.41%
+K: 9 Accuracy: 94.25%
+K: 10 Accuracy: 94.20%
+Best k: 3
+Test accuracy: 0.9604
+carga 0.215 s | ajuste 47.556 s | test 10.294 s | total 58.068 s | comunicacion 0.588 s
+CSV;B;2;10000;10;5;2500;0;3;0.9604;0.215;47.556;10.294;58.068;0.588;0;0

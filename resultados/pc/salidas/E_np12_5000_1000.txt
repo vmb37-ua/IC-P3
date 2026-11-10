@@ -1,0 +1,15 @@
+K: 1 Accuracy: 94.10%
+K: 2 Accuracy: 93.30%
+K: 3 Accuracy: 94.20%
+K: 4 Accuracy: 94.12%
+K: 5 Accuracy: 94.06%
+[evaluacion] reinicio: k 1 -> 3
+K: 6 Accuracy: 93.98%
+K: 7 Accuracy: 93.78%
+K: 8 Accuracy: 93.62%
+K: 9 Accuracy: 93.46%
+K: 10 Accuracy: 93.30%
+Best k: 3 (ajuste 9, evaluacion 3) reinicios: 1 fotos descartadas: 600
+Test accuracy: 0.9670
+carga 0.368 s | ajuste 7.967 s | test 11.527 s | total 11.882 s | comunicacion 3.098 s
+CSV;E;12;5000;10;5;1000;3;3;0.9670;0.368;7.967;11.527;11.882;3.098;1;600

@@ -1,0 +1,63 @@
+// grafo de la solucion paralela con MPI (knn_mpi.cc), estrategias A, B y especulativa
+digraph paralelo {
+    compound=true;
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fillcolor="#eeeeee", fontname="Helvetica", fontsize=10];
+    edge [fontname="Helvetica", fontsize=9];
+
+    subgraph cluster_A {
+        label="Estrategia A: reparto de valores de K (P procesos)"; style=rounded; color="#1f77b4";
+        a_carga [label="todos: MPI_Init + cargan MNIST de su disco"];
+        a0 [label="P0: k = 1, 1+P, ...\n5 folds cada k", fillcolor="#c9e4ff"];
+        a1 [label="P1: k = 2, 2+P, ...", fillcolor="#c9e4ff"];
+        an [label="Pn: k = n+1, ...", fillcolor="#c9e4ff"];
+        a_red [label="MPI_Allreduce(MAXLOC)\n-> mejor k en todos", shape=hexagon, fillcolor="#ffd6d6"];
+        a_test [label="test: cada proceso 1/P de las fotos", fillcolor="#c9e4ff"];
+        a_sum [label="MPI_Allreduce(SUM) de aciertos\nMPI_Reduce(MAX) de tiempos", shape=hexagon, fillcolor="#ffd6d6"];
+        a_carga -> {a0 a1 an};
+        {a0 a1 an} -> a_red -> a_test -> a_sum;
+    }
+
+    subgraph cluster_B {
+        label="Estrategia B: reparto de las fotos de validación (P procesos)"; style=rounded; color="#ff7f0e";
+        b_carga [label="todos: MPI_Init + cargan MNIST"];
+        b_k [label="for k = 1..10, for fold = 0..4\n(todos hacen lo mismo)", shape=diamond, fillcolor="#ffe9b3"];
+        b_trozo [label="cada proceso clasifica 1/P\nde las fotos de validación", fillcolor="#c9e4ff"];
+        b_red [label="MPI_Allreduce(SUM) de aciertos\n(sincroniza en cada fold: 50 veces)", shape=hexagon, fillcolor="#ffd6d6"];
+        b_test [label="test: 1/P de las fotos cada uno", fillcolor="#c9e4ff"];
+        b_sum [label="MPI_Allreduce(SUM) + MPI_Reduce(MAX)", shape=hexagon, fillcolor="#ffd6d6"];
+        b_carga -> b_k -> b_trozo -> b_red -> b_k [label="siguiente"];
+        b_k -> b_test [label="acabado"];
+        b_test -> b_sum;
+    }
+
+    subgraph cluster_E {
+        label="Especulativa: MPI_Comm_split en dos grupos"; style=rounded; color="#2ca02c";
+        e_split [label="MPI_Comm_split(rank < P-nEval)"];
+        subgraph cluster_aj {
+            label="grupo de ajuste (P - nEval procesos)"; style=dashed;
+            aj [label="estrategia B dentro del grupo\n(Allreduce en su comunicador)", fillcolor="#c9e4ff"];
+            aj_send [label="jefe del ajuste:\nsi k mejora -> MPI_Isend({k,0})\nal acabar -> MPI_Isend({mejorK,1})\nMPI_Waitall", shape=hexagon, fillcolor="#ffd6d6"];
+            aj -> aj_send;
+        }
+        subgraph cluster_ev {
+            label="grupo de evaluación (nEval procesos)"; style=dashed;
+            ev [label="evalúa el test con el mejor k conocido\n(empieza con k = 1)\nbloques de 50 fotos", fillcolor="#c9e4ff"];
+            ev_probe [label="jefe: MPI_Iprobe + MPI_Recv\nMPI_Bcast del estado al grupo", shape=hexagon, fillcolor="#ffd6d6"];
+            ev_dec [label="¿ha cambiado k?", shape=diamond, fillcolor="#ffe9b3"];
+            ev_rein [label="descarta lo hecho\nreinicia con el k nuevo"];
+            ev_fin [label="acabado el test: espera la señal de fin\n(MPI_Recv bloqueante);\nsi el k final es el usado -> resultado válido"];
+            ev -> ev_probe -> ev_dec;
+            ev_dec -> ev_rein [label="sí"];
+            ev_rein -> ev;
+            ev_dec -> ev [label="no, siguiente bloque"];
+            ev_dec -> ev_fin [label="no quedan fotos"];
+        }
+        e_split -> aj;
+        e_split -> ev;
+        aj_send -> ev_probe [label="mensaje TAG_K {k, fin}", style=dashed, color=red, fontcolor=red, constraint=false];
+        e_res [label="jefe evaluación -> P0: MPI_Send(k, aciertos, reinicios, descartadas)\nMPI_Reduce(MAX) de tiempos", shape=hexagon, fillcolor="#ffd6d6"];
+        ev_fin -> e_res;
+        aj_send -> e_res;
+    }
+}

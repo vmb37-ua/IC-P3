@@ -1,0 +1,14 @@
+[proceso 3] K: 4 Accuracy: 94.12%
+[proceso 1] K: 2 Accuracy: 93.30%
+[proceso 2] K: 3 Accuracy: 94.20%
+[proceso 0] K: 1 Accuracy: 94.10%
+[proceso 3] K: 8 Accuracy: 93.62%
+[proceso 1] K: 6 Accuracy: 93.98%
+[proceso 2] K: 7 Accuracy: 93.78%
+[proceso 0] K: 5 Accuracy: 94.06%
+[proceso 1] K: 10 Accuracy: 93.30%
+[proceso 0] K: 9 Accuracy: 93.46%
+Best k: 3
+Test accuracy: 0.9670
+carga 0.218 s | ajuste 6.781 s | test 2.314 s | total 9.315 s | comunicacion 2.432 s
+CSV;A;4;5000;10;5;1000;0;3;0.9670;0.218;6.781;2.314;9.315;2.432;0;0

@@ -1,0 +1,33 @@
+// grafo de flujo del knn secuencial (main.cc)
+digraph secuencial {
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fillcolor="#eeeeee", fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=9];
+
+    inicio [label="inicio", shape=ellipse];
+    carga [label="loadDataset()\nlee 60000 train + 10000 test\n(resize 28x28 -> 14x14 y normaliza)"];
+    sub [label="coge las 20000 primeras\nmuestras para el ajuste"];
+    bucleK [label="for k = 1 .. 10\n(fineTuning)", shape=diamond, fillcolor="#ffe9b3"];
+    bucleF [label="for fold = 0 .. 4\n(CrossValidation::validate)", shape=diamond, fillcolor="#ffe9b3"];
+    split [label="splitDataset()\n16000 train / 4000 validación"];
+    clasif [label="classifyAndEvaluate()\npara cada foto de validación:\nclassify() = 16000 euclidean()\n+ sort + histogram + maxVotesLabel", fillcolor="#c9e4ff"];
+    media [label="acc(k) = media de los 5 folds"];
+    mejor [label="si acc(k) > mejor:\nmejorK = k"];
+    test [label="KNN(train 60000, mejorK)\nclassifyAndEvaluate(test 10000)\n= 10000 x 60000 euclidean()", fillcolor="#c9e4ff"];
+    fin [label="imprime acierto y tiempos", shape=ellipse];
+
+    inicio -> carga -> sub -> bucleK;
+    bucleK -> bucleF [label="k"];
+    bucleF -> split [label="fold"];
+    split -> clasif -> bucleF [label="siguiente fold"];
+    bucleF -> media [label="acabados"];
+    media -> mejor -> bucleK [label="siguiente k"];
+    bucleK -> test [label="acabados\n(depende de mejorK)", color=red, fontcolor=red];
+    test -> fin;
+
+    // notas de independencias
+    nota1 [shape=note, fillcolor="#e6ffe6", label="independientes entre sí:\n- cada k\n- cada fold\n- cada foto de validación/test\nsolo hay que juntar los aciertos al final"];
+    nota2 [shape=note, fillcolor="#ffe6e6", label="dependencia:\nla evaluación final necesita\nel mejor k del ajuste"];
+    nota1 -> bucleK [style=dotted, arrowhead=none];
+    nota2 -> test [style=dotted, arrowhead=none];
+}

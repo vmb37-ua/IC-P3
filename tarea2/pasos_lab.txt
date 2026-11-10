@@ -1,0 +1,34 @@
+TAREA 2 - hola mundo MPI en 3 PCs del laboratorio (hay que enseñarlo al profe)
+
+0) En los 3 PCs: misma cuenta, misma carpeta (la home). Sacar la IP de cada uno:
+     hostname -I
+
+1) En los 3 PCs (o solo en uno si la home es compartida), copiar hola.c a ~ y compilar:
+     mpicc hola.c -o hola
+     chmod o+x hola
+
+2) En el PC "jefe", fichero hosts con una IP por línea:
+     nano hosts          (pegar las 3 IPs)
+     chmod 600 hosts
+   y copiarlo a la misma carpeta en los otros dos.
+
+3) Claves SSH (en el jefe):
+     ssh-keygen -t rsa          (Enter a todo)
+   Pasar la clave a los otros dos (crea ~/.ssh si no existe):
+     ssh-copy-id usuario@IP_PC2
+     ssh-copy-id usuario@IP_PC3
+   (si no hay ssh-copy-id: copiar ~/.ssh/id_rsa.pub a ~/.ssh/authorized_keys de cada PC)
+   Comprobar que entra sin contraseña:  ssh IP_PC2 hostname
+
+4) Lanzar desde el jefe:
+     mpirun -mca plm_rsh_no_tree_spawn 1 -hostfile hosts -n 6 ./hola
+
+   Tiene que salir "Hello from process X out of 6 on <nombre>" con nombres de PCs
+   distintos, y la línea "¡Hola! desde el procesador 2".
+   Hacer captura para la memoria.
+
+Si falla:
+ - "Host key verification failed" -> hacer antes un ssh a mano a cada IP y aceptar (yes)
+ - pide contraseña -> la clave no está bien en authorized_keys (permisos: chmod 700 ~/.ssh; chmod 600 ~/.ssh/authorized_keys)
+ - "not enough slots" -> poner -n 3, o en hosts "IP slots=2"
+ - se queda colgado -> firewall entre PCs; probar --mca btl_tcp_if_include <interfaz> (ver con ip a)

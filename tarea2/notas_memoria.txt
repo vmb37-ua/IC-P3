@@ -1,0 +1,35 @@
+TAREA 2 - lo que hicimos en el lab (mar 10/11/2026, aula L016I)
+
+Clúster: L016I-21 (172.20.243.50, el que lanza), L016I-22 (172.20.243.51), L016I-23 (172.20.243.52)
+Usuario: usuariocp en los 3 (alumno no sirve; desde alumno: su - usuariocp)
+
+SSH: usuariocp entra sin contraseña ni clave. Con ssh -v sale:
+  Authenticated to 172.20.243.51 using "none".
+Por eso no hizo falta ssh-keygen + authorized_keys (si pidiera contraseña: ssh-keygen -t rsa y ssh-copy-id a cada IP).
+Prueba: ssh usuariocp@IP hostname -> devuelve el nombre del PC sin pedir nada.
+
+Compilar en los 3 (misma ruta ~/IC-P3/tarea2):
+  mpicc hola.c -o hola
+  chmod o+x hola
+hosts (chmod 600):
+  172.20.243.50
+  172.20.243.51
+  172.20.243.52
+
+En el aula hay MPICH, no Open MPI -> el comando del enunciado da "unrecognized argument mca".
+Comando que funciona:
+  mpirun -f hosts -n 3 ./hola
+
+Salida:
+  PID: 7081 Hello from process 0 out of 3 on L016I-21 processor 2
+  PID: 5947 Hello from process 1 out of 3 on L016I-22 processor 6
+  PID: 18643 Hello from process 2 out of 3 on L016I-23 processor 3
+  ¡Hola! desde el procesador 2
+
+Explicación:
+- mpirun entra por ssh en los otros nodos para arrancar los procesos; luego se comunican por la red sin ssh
+- la salida de todos los procesos se reenvía a la terminal de mpirun (por eso el printf del rank 2, que corre en el 23, sale en el 21)
+- el orden de las líneas no está garantizado
+- "processor N" = núcleo (sched_getcpu); el "procesador 2" del ¡Hola! es el rank
+
+Foto de la pantalla: la tiene él en el móvil (hecha 10/11 ~14:15).
