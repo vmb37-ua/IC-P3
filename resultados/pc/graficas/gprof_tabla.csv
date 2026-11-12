@@ -1,0 +1,11 @@
+funcion;%O0;llamadas_O0;%O2;llamadas_O2
+euclidean;83.2;3800000000;61.09;3800000000
+maxVotesLabel;0.0;210000;31.08;210000
+KNN::classify;0.16;210000;7.49;210000
+_init;3.33;0;0.27;0
+decltype ;2.63;5253127750;0;0
+KNNResult::operator<;2.34;958160454;0;0
+__normal_iterator<...>;1.26;395139246;0;0
+KNNResult::KNNResult;1.1;3800000000;0;0
+enable_if<...>;0.6;1413143136;0;0
+void __unguarded_linear_insert<...>;0.6;3799211829;0;0

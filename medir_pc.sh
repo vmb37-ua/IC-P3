@@ -6,7 +6,8 @@
 set -u
 RAIZ="$(cd "$(dirname "$0")" && pwd)"
 B="$RAIZ/knn2/build"            # aqui estan train/ y test/
-RES="$RAIZ/resultados/pc"
+RES="${RES:-$RAIZ/resultados/pc}"   # RES=... ./medir_pc.sh para otra carpeta
+PROCS="${PROCS:-2 3 4 6 8 10 12 14}"   # PROCS="2 3 4 6 8" en un pc de 8 nucleos
 CSV="$RES/medidas.csv"
 CABECERA="estrategia;procesos;muestras;maxK;folds;ntest;evaluadores;k;acierto;carga;ajuste;test;total;comunicacion;reinicios;descartadas"
 
@@ -55,7 +56,7 @@ ejecutar() {
 barrido() {
     log "talla $1 muestras / $2 test"
     ejecutar A 1 "$1" "$2"          # con 1 proceso = secuencial
-    for p in 2 3 4 6 8 10 12 14; do
+    for p in $PROCS; do
         ejecutar A "$p" "$1" "$2"
         ejecutar B "$p" "$1" "$2"
         ejecutar E "$p" "$1" "$2"
