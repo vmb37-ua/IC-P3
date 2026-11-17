@@ -89,6 +89,8 @@ def comando(programa, caso, np_, args):
     binario = os.path.join(".", programa)
     if programa == "campo":
         return [binario, caso]
+    if args.lanzador:  # p.ej. "mpirun -f hosts" con MPICH (en el aula no va -mca)
+        return args.lanzador.split() + ["-np", str(np_), binario, caso]
     cmd = ["mpirun"]
     if args.hostfile:
         cmd += ["-mca", "plm_rsh_no_tree_spawn", "1", "-hostfile", args.hostfile]
@@ -107,6 +109,7 @@ def main():
                     help="numeros de procesos MPI (el secuencial siempre usa 1)")
     ap.add_argument("--reps", type=int, default=3, help="repeticiones de cada medida")
     ap.add_argument("--hostfile", help="fichero de hosts para ejecutar en el cluster")
+    ap.add_argument("--lanzador", help="comando mpirun entero sin el -np (si no, el de Open MPI)")
     ap.add_argument("--oversubscribe", action="store_true",
                     help="permite mas procesos que nucleos (solo para pruebas)")
     ap.add_argument("--etiqueta", default="", help="texto libre para identificar la tanda")

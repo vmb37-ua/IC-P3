@@ -4,3 +4,6 @@ knn2/cv
 knn2/cv_pg_*
 gmon.out
 resultados_*.tar.gz
+campo/campo_pg_*
+tarea2/hola
+resultados/clase/
